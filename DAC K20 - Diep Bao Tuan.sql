@@ -1,3 +1,14 @@
+#Tasks:<\br> 
+Query 01: calculate total visit, pageview, transaction for Jan, Feb and March 2017 (order by month)
+Query 02: Bounce rate per traffic source in July 2017 (Bounce_rate = num_bounce/total_visit) (order by total_visit DESC)
+Query 3: Revenue by traffic source by week, by month in June 2017
+Query 04: Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017.
+Query 05: Average number of transactions per user that made a purchase in July 2017
+Query 06: Average amount of money spent per session. Only include purchaser data in July 2017
+Query 07: Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
+Query 08: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase.
+              Add_to_cart_rate = number product  add to cart/number product view. Purchase_rate = number product purchase/number product view. The output should be calculated in product level.
+
 --Query 1
 with process_data as(
        SELECT format_date('%Y%m',parse_date('%Y%m%d',date)) as Month, 
@@ -12,8 +23,6 @@ with process_data as(
 select *
 from process_data;
 
---correct
---e có thể ghi trực tiếp luôn mà k cần qua CTE
 
 --Query 2
 with processed_data as 
@@ -28,7 +37,6 @@ with processed_data as
   select * 
   from processed_data;
 
---correct
 
 --Query 3
 with by_week as(
@@ -63,7 +71,6 @@ select*
 from by_month
 order by Source;
 
---correct
 
 --Query 4
 with purchaser_Data as
@@ -114,11 +121,6 @@ inner join avg_pageviews_non_purchase
 on avg_pageviews_purchase.month=avg_pageviews_non_purchase.month
 order by month;
 
---bài này e mắc 2 lỗi là logic tính
---ở trên e sum theo từng fullvisitorId, từng tháng, xong xuống lại sum tiếp  theo tháng 1 lần nữa, no shơi bị dài ấy
---2 là câu 4 này lưu ý là mình nên dùng left join hoặc full join, bởi vì trong câu này, phạm vi chỉ từ tháng 6-7, nên chắc chắc sẽ có pur và nonpur của cả 2 tháng
---mình inner join thì vô tình nó sẽ ra đúng. nhưng nếu đề bài là 1 khoảng thời gian dài hơn, 2-3 năm chẳng hạn, nó cũng tháng chỉ có nonpur mà k có pur
---thì khi đó inner join nó sẽ làm mình bị mất data, thay vì hiện số của nonpur và pur thì nó để trống
 
 with 
 purchaser_data as(
@@ -174,8 +176,6 @@ select month,
 from totals_transactions_Data
 group by month;
 
---correct
---e hoàn toàn có thể sum(trans)/count(distinct....)
 select
     format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
     sum(totals.transactions)/count(distinct fullvisitorid) as Avg_total_transactions_per_user
@@ -340,9 +340,6 @@ left join add_to_cart a on pv.month = a.month
 left join purchase p on pv.month = p.month
 order by pv.month;
 
---bài này k nên inner join, vì nếu như bảng purchase k có data thì sẽ k mapping đc vs bảng productview, từ đó kết quả sẽ k có luôn, mình nên dùng left join
-
---Cách 2: bài này mình có thể dùng count(case when) hoặc sum(case when)
 
 with product_data as(
 select
@@ -366,7 +363,7 @@ select
 from product_data;
 
 
-                                                          ---very good---
+                                                 
 
 
 
